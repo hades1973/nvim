@@ -51,16 +51,17 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-let mapleader="\<Space>"
-" mimic emacs key-bindings
-" Move
-"inoremap <C-a> <Home>
-"inoremap <C-e> <End>
-inoremap <C-b> <Left>
-inoremap <C-f> <Right>
-inoremap <M-b> <C-o>B
-inoremap <M-f> <C-o>W
-inoremap jj <ESC>o
+let mapleader=";"
+
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+""""""""""""""""""""""""""""""""""""
+" some insert mode key for convient
+"
+inoremap <C-h> <ESC>I
+inoremap <C-l> <ESC>A
+inoremap <C-j> <ESC>o
+inoremap <C-k> <ESC>O
 
 map / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
