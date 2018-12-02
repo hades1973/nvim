@@ -1,18 +1,96 @@
-call plug#begin('~/.local/share/nvim/plugged')
-Plug 'scrooloose/nerdtree'
-Plug 'roxma/nvim-completion-manager'
+call plug#begin()
+""""""""""""""""""""""""""""""""""""""""""""""
+" vim-go
 Plug 'fatih/vim-go'
 Plug 'fatih/molokai'
-Plug 'AndrewRadev/splitjoin.vim'
+
+"""""""""""""""""""""""""""""""""""""""""""""""
+"  complete frame
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+autocmd BufEnter * call ncm2#enable_for_buffer()
+set completeopt=noinsert,menuone,noselect
+set shortmess+=c
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" debug
+set noshowmode
+
+""""""""""""""""""""""""""""""""""""""""""""""
+" snips
+Plug 'ncm2/ncm2-ultisnips'
 Plug 'SirVer/ultisnips'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-Plug 'easymotion/vim-easymotion'
-Plug 'mattn/emmet-vim'
-Plug 'Raimondi/delimitMate'
+Plug 'honza/vim-snippets'
+
+" Press enter key to trigger snippet expansion
+" The parameters are the same as `:help feedkeys()`
+inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+
+" c-j c-k for moving in snippet
+let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
+let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+let g:UltiSnipsRemoveSelectModeMappings = 0
+
+""""""""""""""""""""""""""""""""""""""""""""
+" language
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'lervag/vimtex'
+Plug 'ncm2/ncm2-jedi', {'for': 'python'}
+
 call plug#end()
 
+""""""""""""""""""""""
+"      Basic Settings      "
+""""""""""""""""""""""
+set nocompatible                " Enables us Vim specific features
+filetype off                    " Reset filetype detection first ...
+filetype plugin indent on       " ... and enable filetype detection
+set ttyfast                     " Indicate fast terminal conn for faster redraw
+" set ttymouse=xterm             " Indicate terminal type for mouse codes
+" set ttyscroll=3                 " Speedup scrolling
+set laststatus=2                " Show status line always
+set encoding=utf-8              " Set default encoding to UTF-8
+set autoread                    " Automatically read changed files
+set autoindent                  " Enabile Autoindent
+set backspace=indent,eol,start  " Makes backspace key more powerful.
+set incsearch                   " Shows the match while typing
+set hlsearch                    " Highlight found searches
+set noerrorbells                " No beeps
+set number                      " Show line numbers
+set showcmd                     " Show me what I'm typing
+set noswapfile                  " Don't use swapfile
+set nobackup                    " Don't create annoying backup files
+set splitright                  " Vertical windows should be split to right
+set splitbelow                  " Horizontal windows should split to bottom
+set autowrite                   " Automatically save before :next, :make etc.
+set hidden                      " Buffer should still exist if window is closed
+set fileformats=unix,dos,mac    " Prefer Unix over Windows over OS 9 formats
+set noshowmatch                 " Do not show matching brackets by flickering
+set noshowmode                  " We show the mode with airline or lightline
+set ignorecase                  " Search case insensitive...
+set smartcase                   " ... but not it begins with upper case
+set completeopt=menu,menuone    " Show popup menu, even if there is one entry
+set pumheight=10                " Completion window max size
+set nocursorcolumn              " Do not highlight column (speeds up highlighting)
+set nocursorline                " Do not highlight cursor (speeds up highlighting)
+set lazyredraw                  " Wait to redraw
+
+" Enable to copy to clipboard for operations like yank, delete, change and put
+" http://stackoverflow.com/questions/20186975/vim-mac-how-to-copy-to-clipboard-without-pbcopy
+if has('unnamedplus')
+  set clipboard^=unnamed
+  set clipboard^=unnamedplus
+endif
+
+" This enables us to undo files even if you exit Vim.
+if has('persistent_undo')
+  set undofile
+  set undodir=~/.config/vim/tmp/undo//
+endif
 
 " Colorscheme
 syntax enable
@@ -21,85 +99,40 @@ let g:rehash256 = 1
 let g:molokai_original = 1
 colorscheme molokai
 
-filetype plugin indent on       " ... and enable filetype detection
-set ttyfast                     " Indicate fast terminal conn for faster redraw
-set laststatus=2                " Show status line always
-set encoding=utf-8              " Set default encoding to UTF-8
-set autoread                    " Automatically read changed files
-set autoindent                  " Enabile Autoindent
-set backspace=indent,eol,start  " Makes backspace key more powerful.
-set incsearch                   " Shows the match while typing
-set nohlsearch                    " Highlight found searches
-set noerrorbells                " No beeps
-set rnu                      " Show line numbers
-set showcmd                     " Show me what I'm typing
-set noswapfile                  " Don't use swapfile
-set nobackup                    " Don't create annoying backup files
-set fileformats=unix,dos,mac    " Prefer Unix over Windows over OS 9 formats
-set lazyredraw                  " Wait to redraw
+""""""""""""""""""""""
+"      Mappings      "
+""""""""""""""""""""""
 
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set noexpandtab
+" Set leader shortcut to a comma ','. By default it's the backslash
+let mapleader = ";"
 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" Jump to next error with Ctrl-n and previous error with Ctrl-m. Close the
+" quickfix window with <leader>a
+map <C-n> :cnext<CR>
+map <C-m> :cprevious<CR>
+nnoremap <leader>a :cclose<CR>
 
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
+" Visual linewise up and down by default (and use gj gk to go quicker)
+noremap <Up> gk
+noremap <Down> gj
+noremap j gj
+noremap k gk
 
-let mapleader=";"
+" Search mappings: These will make it so that going to the next one in a
+" search will center on the line it's found in.
+nnoremap n nzzzv
+nnoremap N Nzzzv
 
-nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
-""""""""""""""""""""""""""""""""""""
-" some insert mode key for convient
-"
-inoremap <C-h> <ESC>I
-inoremap <C-l> <ESC>A
-inoremap <C-j> <ESC>o
-inoremap <C-k> <ESC>O
+" Act like D and C
+nnoremap Y y$
 
-map / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-nmap s <Plug>(easymotion-s2)
-nmap t <Plug>(easymotion-t2)
-map n <Plug>(easymotion-next)
-map N <plug>(easymotion-prev)
-" force writing even if open root's file with user
-cmap w!! w !sudo tee > /dev/null %
+" Enter automatically into the files directory
+autocmd BufEnter * silent! lcd %:p:h
 
-if has('nvim')
-  fu! OpenTerminal()
-   " open split windows on the topleft
-   topleft split
-   " resize the height of terminal windows to 30
-   resize 10
-   :terminal
-  endf
-else
-  fu! OpenTerminal()
-   " open split windows on the topleft
-   topleft split
-   " resize the height of terminal windows to 30
-   resize 10
-   :call term_start('bash', {'curwin' : 1, 'term_finish' : 'close'})
-  endf
-endif
 
-nnoremap <F5> :call OpenTerminal()<cr>
-
-" completion ++++++++++++++++++++++++++++++++++++++++++++++++++++
-inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
-imap <expr> <CR>  (pumvisible() ?  "\<c-y>\<Plug>(expand_or_nl)" : "\<CR>")
-imap <expr> <Plug>(expand_or_nl) (cm#completed_is_snippet() ? "\<C-U>":"\<CR>")
-inoremap <c-c> <ESC>
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" vim-go ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+"""""""""""""""""""""
+"      vim-go Plugins      "
+"""""""""""""""""""""
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
 let g:go_list_type = "quickfix"
@@ -107,7 +140,7 @@ let g:go_list_type = "quickfix"
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
+let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 
@@ -166,19 +199,65 @@ function! s:build_go_files()
   endif
 endfunction
 
-" NERDTree +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-nnoremap <silent> <F4> :NERDTree<CR>
-map <C-l> :tabn<cr>             "Ctrl+l¿ì½Ý¼ü£ºÏÂÒ»¸ötab
-map <C-h> :tabp<cr>             "ÉÏÒ»¸ötab
-map <C-n> :tabnew<cr>           "Ctrl+n¿ì½Ý¼ü£ºÐÂtab
-map <C-k> :bn<cr>               "ÏÂÒ»¸öÎÄ¼þ
-map <C-j> :bp<cr>               "ÉÏÒ»¸öÎÄ¼þ
+"let g:completor_python_binary = '/home/wow/anaconda3/bin'
+" Use TAB to complete when typing words, else inserts TABs as usual.  Uses
+" dictionary, source files, and completor to find matching words to complete.
 
-" emmet ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-"
-augroup html
+" Note: usual completion is on <C-n> but more trouble to press all the time.
+" Never type the same word twice and maybe learn a new spellings!
+" Use the Linux dictionary when spelling is in doubt.
+function! Tab_Or_Complete() abort
+  " If completor is already open the `tab` cycles through suggested completions.
+  if pumvisible()
+    return "\<C-N>"
+  " If completor is not open and we are in the middle of typing a word then
+  " `tab` opens completor menu.
+  elseif col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+    return "\<C-R>=completor#do('complete')\<CR>"
+  else
+    " If we aren't typing a word and we press `tab` simply do the normal `tab`
+    " action.
+    return "\<Tab>"
+  endif
+endfunction
+
+" Use `tab` key to select completions.  Default is arrow keys.
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Use tab to trigger auto completion.  Default suggests completions as you type.
+let g:completor_auto_trigger = 1
+inoremap <expr> <Tab> Tab_Or_Complete()
+
+
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" IMPORTANTE: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+" Press enter key to trigger snippet expansion
+" The parameters are the same as `:help feedkeys()`
+inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+
+" c-j c-k for moving in snippet
+let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
+let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+let g:UltiSnipsRemoveSelectModeMappings = 0
+au BufEnter * call ncm2#enable_for_buffer()
+set completeopt=noinsert,menuone,noselect
+
+augroup my_cm_setup
   autocmd!
-  " Show by default 2 spaces for a tab
-  autocmd BufNewFile,BufRead *.html setlocal noexpandtab tabstop=2 shiftwidth=2
+  autocmd BufEnter * call ncm2#enable_for_buffer()
+  autocmd Filetype tex call ncm2#register_source({
+          \ 'name': 'vimtex',
+          \ 'priority': 8,
+          \ 'scope': ['tex'],
+          \ 'mark': 'tex',
+          \ 'word_pattern': '\w+',
+          \ 'complete_pattern': g:vimtex#re#ncm2,
+          \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
+          \ })
 augroup END
-
