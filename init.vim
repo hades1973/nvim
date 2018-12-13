@@ -1,7 +1,6 @@
 call plug#begin()
 """"""""""""""""""""""""""""""""""""""""""""""
 " vim-go
-Plug 'fatih/vim-go'
 Plug 'fatih/molokai'
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -40,7 +39,11 @@ Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-path'
 Plug 'lervag/vimtex'
 Plug 'ncm2/ncm2-jedi', {'for': 'python'}
+Plug 'ncm2/ncm2-go'
+Plug 'fatih/vim-go'
 
+Plug 'easymotion/vim-easymotion'
+Plug 'junegunn/vim-easy-align'
 call plug#end()
 
 """"""""""""""""""""""
@@ -61,6 +64,7 @@ set incsearch                   " Shows the match while typing
 set hlsearch                    " Highlight found searches
 set noerrorbells                " No beeps
 set number                      " Show line numbers
+set relativenumber
 set showcmd                     " Show me what I'm typing
 set noswapfile                  " Don't use swapfile
 set nobackup                    " Don't create annoying backup files
@@ -103,8 +107,6 @@ colorscheme molokai
 "      Mappings      "
 """"""""""""""""""""""
 
-" Set leader shortcut to a comma ','. By default it's the backslash
-let mapleader = ";"
 
 " Jump to next error with Ctrl-n and previous error with Ctrl-m. Close the
 " quickfix window with <leader>a
@@ -261,3 +263,35 @@ augroup my_cm_setup
           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
           \ })
 augroup END
+
+
+""""""""""""""""""""""""""""""""""""""
+"" key map
+" Set leader shortcut to a comma ','. By default it's the backslash \
+"let mapleader = "<space>"
+
+inoremap jk <esc>
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+inoremap <c-u> <esc>viwUa
+inoremap <c-h> <esc>I
+inoremap <c-l> <esc>A
+inoremap <c-j> <esc>o
+inoremap <c-k> <esc>O
+"imap <F2> <esc><Plug>(easymotion-s2)
+nmap s <Plug>(easymotion-s2)
+
+""""""""""""""""""""""""""""""""""""""
+" iabbrev
+iabbrev parv4 \par{}\vspace{4cm}
+iabbrev parv0 \par{}\vspace{0.2cm}
+
+""""""""""""""""""""""""""""""""""""
+" tmp
+onoremap p i{
+onoremap b /return<cr>
+onoremap in( :<c-u>normal! f(vi(<cr>
+onoremap il( :<c-u>normal! F)vi(<cr>
+
+onoremap ih :<c-u>execute "normal! ?^==\\+$\r:nohlsearch\rkvg_"<cr>
+onoremap ah :<c-u>execute "normal! ?^==\\+$\r:nohlsearch\rg_vk0"<cr>
