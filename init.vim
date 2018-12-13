@@ -42,6 +42,7 @@ Plug 'ncm2/ncm2-jedi', {'for': 'python'}
 Plug 'ncm2/ncm2-go'
 Plug 'fatih/vim-go'
 
+Plug 'scrooloose/nerdtree'
 Plug 'easymotion/vim-easymotion'
 Plug 'junegunn/vim-easy-align'
 call plug#end()
@@ -264,6 +265,13 @@ augroup my_cm_setup
           \ })
 augroup END
 
+" NERDTree config
+map <F4> :NERDTreeToggle<CR>
+"第一条是说使用F2键快速调出和隐藏它；
+"第二条是关闭vim时，如果打开的文件除了NERDTree没有其他文件时，它自动关闭，减少多次按:q!。
+"如果想打开vim时自动打开NERDTree，可以如下设定
+autocmd vimenter * NERDTree
+"---------------------------------------------------------------
 
 """"""""""""""""""""""""""""""""""""""
 "" key map
